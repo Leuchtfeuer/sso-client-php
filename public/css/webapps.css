@@ -1,0 +1,17 @@
+.navbar {
+    background-color: #4f4f4f;
+}
+
+.navbar-brand {
+    color: #f5f5f5 ! important;
+}
+
+.jumbotron {
+    background-color: rgb(120,130,50);
+    color: #eeeeee;
+}
+
+.btn-primary {
+    background-color: #1c6315;
+    border: 1px solid #0b5204;
+}
