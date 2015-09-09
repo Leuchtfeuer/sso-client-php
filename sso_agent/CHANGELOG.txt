@@ -1,0 +1,36 @@
+Changelog
+0.7.3
+  changed $HTTP_SERVER_VARS to $_SERVER to provide PHP5 compatibility
+  changed $HTTP_GET_VARS to $_GET to provide PHP5 compatibility
+0.7.2
+  fix of $this vars
+0.7.1
+  bug fixed $flags missing in globals in line 311
+0.7
+  various enhancements for user propagation functionality
+0.62
+  fixed some bugs to make agent run on Windows server
+  added config variable "windows_server"
+0.61
+  changed default config path to absolute
+0.6
+  optical changes :-)
+0.5.5
+  Fixed bug that caused "signature invalid" errors
+0.5.4
+  included php-adapter now has to return an array instead of a string
+  that has to be exploded
+0.5.3
+  added php:// and cmd:// to config
+  use "cmd://path/to/script --many-options=val" for command line
+  use "php://path/to/script --url=redirect" for php script
+0.5.2
+  errorcodes() split in errorcode_default() and errorcodes()
+  changed tmp_signature_file = value
+    to tmp_signature_dir and tmp_signature_prefix
+  changed $_SERVER to $HTTP_SERVER_VARS :(
+  changed $_GET to $HTTP_GET_VARS :(
+0.5.1:
+  added openssl verify per command line
+  added externalopenssl = 1
+  added tmp_signature_file = VALUE
