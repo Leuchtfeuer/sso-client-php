@@ -6,7 +6,7 @@
 # --
 #
 # Signature-Based Single Sign-On Framework
-# SSO Agent (PHP)
+# Direct SSO Client (PHP)
 #
 # Version            : 0.7.3
 # Last update        : 27.09.2006
@@ -89,7 +89,7 @@
 // CookieDomain
 // CookieSecure
 
-$configfile = "/usr/local/sigsso/etc/lemken_sigsso.conf";
+$configfile = "/usr/local/directsso/etc/lemken_directsso.conf";
 $errorcodes = array();
 
 errorcode_default();
@@ -118,17 +118,17 @@ if ($debugflag) {
 	printf('<br>Parameters detected: ' . $data);
 }
 
-if (ereg("^2.", $version)) {
+if (preg_match("^2.", $version)) {
 	// decode $userdata and $flags and evaluate $flags
 	$userdata = base64_decode($userdata);
 	if ($debugflag) {
 		printf('<br>submitted userdata: ' . $userdata);
 	}
 
-	$tmpflags = split("\|", base64_decode($flags));
+	$tmpflags = preg_split("\|", base64_decode($flags));
 	unset($flags);
 	for ($i = 0; $i < count($tmpflags); $i++) {
-		$tmpflag = split("=", $tmpflags[$i]);
+		$tmpflag = preg_split("=", $tmpflags[$i]);
 		$flags["$tmpflag[0]"] = $tmpflag[1];
 	}
 	if ($debugflag) {
@@ -152,11 +152,11 @@ checksign();
 if ($cmd == "cmd") {
 	// get protocol version from the adapter
 
-	$getver = split(" ", $confline, 2);
+	$getver = preg_split(" ", $confline, 2);
 	$getver = $getver[0] . " --get_version\n";
 	$tempver = '';
 	$tmp = exec($getver, $tempver);
-	$tempver = split("\ |\t", $tempver[0]);
+	$tempver = preg_split("\ |\t", $tempver[0]);
 	if ($tempver[0] && $tempver[0] != "Error") {
 		$adapter_version = $tempver[1];
 	} else {
@@ -174,9 +174,9 @@ if ($cmd == "cmd") {
 			print('<br>Return values: ');
 			print_r($return);
 		}
-	} elseif (ereg("^2.", $adapter_version)) {
+	} elseif (preg_match("^2.", $adapter_version)) {
 		switch ($action) {
-			case logon:
+			case 'logon':
 				if ($flags["create_modify"] == "1") {
 					$confline_create_modify = trim($confline) . " --version=" . $version . " --action=create_modify --userdata=" . "\"" . $userdata . "\"" . "\n";
 					exec($confline_create_modify, $return);
@@ -204,10 +204,10 @@ if ($cmd == "cmd") {
 					}
 				}
 				break;
-			case logoff:
+			case 'logoff':
 				// still needs to be done
 				break;
-			case remove:
+			case 'remove':
 				// still needs to be done
 				break;
 		}
@@ -215,7 +215,7 @@ if ($cmd == "cmd") {
 	$sso_values = array();
 	$j = -1;
 	foreach ($return as $i) {
-		$pieces = split("\ |\t", $i, 2);  // split char whitespace
+		$pieces = preg_split("\ |\t", $i, 2);  // split char whitespace
 
 		if ($pieces[0] == "Error") {
 			$errortext = $pieces[1];
@@ -235,7 +235,7 @@ if ($cmd == "cmd") {
 
 	// Include php script
 	$confline = trim($confline);
-	$arr_exec = split("--url=", $confline);
+	$arr_exec = preg_split("--url=", $confline);
 	$exec = trim($arr_exec[0]);
 	$url = trim($arr_exec[1]);
 	include_once($exec);
@@ -258,7 +258,7 @@ if ($cmd == "cmd") {
 		if ($debugflag) {
 			print('<br>Executed function sso with params : ' . $user . ' ' . $_SERVER["REMOTE_ADDR"] . ' ' . $_SERVER["HTTP_USER_AGENT"]);
 		}
-	} elseif (ereg("^2.", $adapter_version)) {
+	} elseif (preg_match("^2.", $adapter_version)) {
 		switch ($action) {
 			case 'logon':
 				if ($flags["create_modify"] == "1") {
@@ -591,22 +591,22 @@ function errorcode_default() {
 
 	// Standard Codes:
 	$errorcodes += array(
-		0 => "sigsso: file access error - sigsso config file",    //
-		1 => "sigsso: Invocation error - missing USER",        //user_missing
-		2 => "sigsso: Invocation error - missing TPA_ID",    //tpaid_missing
-		3 => "sigsso: Invocation error - missing ExpirationTime",//expires_missing
-		4 => "sigsso: Invocation error - missing signature",    //signature_missing
-		10 => "sigsso: error in configfile - missing public_ssl_key",//sslkey_missingconf
-		11 => "sigsso: error in configfile - missing tokensfile entry",//usedtokens_missingconf
-		12 => "sigsso: error in configfile - missing logfile",    //logfile_missingconf
-		20 => "sigsso: file access error - SSL public key file",    //sslkey_missingfile
-		21 => "sigsso: file access error - UsedTokens file",    //usedtokens_missingfile
-		22 => "sigsso: file access error - log file",        //logfile_missingfile
-		30 => "sigsso: validation error - TPA_ID is invalid or not configured",//tpaid_unknown
-		31 => "sigsso: validation error - SSO Link has been used before",//usedtokens_allreadyused
-		32 => "sigsso: validation error - signature invalid",    //signature_invallid
-		33 => "sigsso: validation error - SSO Link expired (or system clock out of sync?)!", //expires_exeeded
-		40 => "sigsso: An error in the Third Party Application Adapter occurred. It said: " //tpa_error
+		0 => "directsso: file access error - directsso config file",    //
+		1 => "directsso: Invocation error - missing USER",        //user_missing
+		2 => "directsso: Invocation error - missing TPA_ID",    //tpaid_missing
+		3 => "directsso: Invocation error - missing ExpirationTime",//expires_missing
+		4 => "directsso: Invocation error - missing signature",    //signature_missing
+		10 => "directsso: error in configfile - missing public_ssl_key",//sslkey_missingconf
+		11 => "directsso: error in configfile - missing tokensfile entry",//usedtokens_missingconf
+		12 => "directsso: error in configfile - missing logfile",    //logfile_missingconf
+		20 => "directsso: file access error - SSL public key file",    //sslkey_missingfile
+		21 => "directsso: file access error - UsedTokens file",    //usedtokens_missingfile
+		22 => "directsso: file access error - log file",        //logfile_missingfile
+		30 => "directsso: validation error - TPA_ID is invalid or not configured",//tpaid_unknown
+		31 => "directsso: validation error - SSO Link has been used before",//usedtokens_allreadyused
+		32 => "directsso: validation error - signature invalid",    //signature_invallid
+		33 => "directsso: validation error - SSO Link expired (or system clock out of sync?)!", //expires_exeeded
+		40 => "directsso: An error in the Third Party Application Adapter occurred. It said: " //tpa_error
 	);
 }
 
@@ -628,6 +628,7 @@ function errorcode() {
 		}
 		$tmp = explode(":", $i, 2);
 		$tmp2 = trim($tmp[0]); // conf entry name
+		$tmp3 = '';
 		if (isset($tmp[1])) {
 			$tmp3 = trim($tmp[1]); // conf entry value
 		}

@@ -1,4 +1,4 @@
-# sigsso.conf sample file
+# directsso.conf sample file
 # 2006-08-02
 
 [global]
@@ -9,9 +9,9 @@ loglevel:4
 #       3: errors (tpa_id + user + expires + signature)
 #       4: success and errors (tpa_id + user + expires + signature)
 
-public_ssl_key: /usr/local/sigsso/etc/sigsso_public.key
-tokensfile:     /usr/local/sigsso/tmp/usedtokens.txt
-logfile:        /var/log/sigsso/sigsso.log
+public_ssl_key: /usr/local/directsso/etc/directsso_public.key
+tokensfile:     /usr/local/directsso/tmp/usedtokens.txt
+logfile:        /var/log/directsso/directsso.log
 externalOpenssl: 1
 tmp_signature_dir: /tmp
 tmp_signature_prefix: sign_
