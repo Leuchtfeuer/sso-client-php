@@ -42,7 +42,7 @@ class DirectSSOClient {
 	private $logLevel;
 	private $confline = '';
 	private $user;
-	private $tpaId;
+	private $appId;
 	private $publicSslKey;
 	private $externalOpenssl;
 	private $tmpSignaturePrefix;
@@ -64,7 +64,7 @@ class DirectSSOClient {
 	private $errorCodes = array(
 		0 => "directsso: file access error - directsso config file",    //
 		1 => "directsso: Invocation error - missing USER",        //user_missing
-		2 => "directsso: Invocation error - missing TPA_ID",    //tpaid_missing
+		2 => "directsso: Invocation error - missing APP_ID",    //appid_missing
 		3 => "directsso: Invocation error - missing ExpirationTime",//expires_missing
 		4 => "directsso: Invocation error - missing signature",    //signature_missing
 		10 => "directsso: error in configfile - missing public_ssl_key",//sslkey_missingconf
@@ -73,11 +73,11 @@ class DirectSSOClient {
 		20 => "directsso: file access error - SSL public key file",    //sslkey_missingfile
 		21 => "directsso: file access error - UsedTokens file",    //usedtokens_missingfile
 		22 => "directsso: file access error - log file",        //logfile_missingfile
-		30 => "directsso: validation error - TPA_ID is invalid or not configured",//tpaid_unknown
+		30 => "directsso: validation error - APP_ID is invalid or not configured",//appid_unknown
 		31 => "directsso: validation error - SSO Link has been used before",//usedtokens_allreadyused
 		32 => "directsso: validation error - signature invalid",    //signature_invallid
 		33 => "directsso: validation error - SSO Link expired (or system clock out of sync?)!", //expires_exeeded
-		40 => "directsso: An error in the Third Party Application Adapter occurred. It said: " //tpa_error
+		40 => "directsso: An error in the Third Party Application Adapter occurred. It said: " //app_error
 	);
 	private $errorText;
 
@@ -96,17 +96,17 @@ class DirectSSOClient {
 		// get variables
 		$this->getvars();
 
-		// check for user,tpa_id and expires
+		// check for user,app_id and expires
 		$this->checkvars();
 
 		// create and check signed string
 		if (!$this->version) {
-			$this->data = 'user=' . $this->user . '&tpa_id=' . $this->tpaId . '&expires=' . $this->expires;
+			$this->data = 'user=' . $this->user . '&tpa_id=' . $this->appId . '&expires=' . $this->expires;
 		} else {
 			if (version_compare("2.1", $this->version, '>=')) {
-				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&app_id=' . $this->tpaId . '&expires=' . $this->expires . '&action=' . $this->action . '&flags=' . $this->flags . '&userdata=' . $this->userData;
+				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&app_id=' . $this->appId . '&expires=' . $this->expires . '&action=' . $this->action . '&flags=' . $this->flags . '&userdata=' . $this->userData;
 			} else {
-				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&tpa_id=' . $this->tpaId . '&expires=' . $this->expires . '&action=' . $this->action . '&flags=' . $this->flags . '&userdata=' . $this->userData;
+				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&tpa_id=' . $this->appId . '&expires=' . $this->expires . '&action=' . $this->action . '&flags=' . $this->flags . '&userdata=' . $this->userData;
 			}
 		}
 		if ($this->debugflag) {
@@ -324,9 +324,9 @@ class DirectSSOClient {
 #print_r("</pre>");
 
 		if ($this->logLevel > 3) {
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $this->user . " TPA_ID:" . $this->tpaId . " TIMESTAMP:" . $this->expires . " SIGNATURE:" . $_GET['signature'] . "\n";
+			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $this->user . " APP_ID:" . $this->appId . " TIMESTAMP:" . $this->expires . " SIGNATURE:" . $_GET['signature'] . "\n";
 		} elseif ($this->logLevel > 1) {
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $this->user . " TPA_ID:" . $this->tpaId . "\n";
+			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $this->user . " APP_ID:" . $this->appId . "\n";
 		}
 		fwrite($this->logging, $this->logit);
 		fclose($this->logging);
@@ -385,7 +385,7 @@ class DirectSSOClient {
 					$this->windowsServer = trim($tmp[1]);
 				}
 			} elseif ($section == 'main') {
-				if ($this->tpaId == trim($tmp[0])) {
+				if ($this->appId == trim($tmp[0])) {
 					$this->cmd = preg_replace("/\:\/\/.*/", "", trim(str_replace("$tmp[0]:", "", $i)));
 					$this->confline = trim(str_replace("$tmp[0]:", "", $i));
 
@@ -407,7 +407,7 @@ class DirectSSOClient {
 				}
 			}
 		}
-		if (!$this->confline) {  // no config entry for tpa_id
+		if (!$this->confline) {  // no config entry for app_id
 			$this->errorpage(30);
 		}
 		if (!$this->publicSslKey) {  // no config entry for public_ssl_key
@@ -422,7 +422,7 @@ class DirectSSOClient {
 	}
 
 	private function getvars() {
-		$this->tpaId = isset($_GET['app_id']) ? $_GET['app_id'] : $_GET['tpa_id'];
+		$this->appId = isset($_GET['app_id']) ? $_GET['app_id'] : $_GET['tpa_id'];
 		$this->thisTime = time();
 		$this->user = $_GET['user'];
 		$this->expires = $_GET['expires'];
@@ -454,7 +454,7 @@ class DirectSSOClient {
 		if (!$this->user) { // no user?
 			$this->errorpage(1);
 		}
-		if (!$this->tpaId) { // no tpa_id?
+		if (!$this->appId) { // no app_id?
 			$this->errorpage(2);
 		}
 		if (!$this->expires) { // no expirationtime?
@@ -526,7 +526,7 @@ class DirectSSOClient {
 		$lines = explode("\n", $tokensactive);
 		foreach ($lines as $i) {
 			$tmp = explode(':', $i);
-			if (($tmp[0] == $this->expires) && ($tmp[1] == $this->user) && ($tmp[2] == $this->tpaId)) {
+			if (($tmp[0] == $this->expires) && ($tmp[1] == $this->user) && ($tmp[2] == $this->appId)) {
 				$this->errorpage(31);
 			}
 		}
@@ -537,7 +537,7 @@ class DirectSSOClient {
 				$content .= $tmp[0] . ':' . $tmp[1] . ':' . $tmp[2] . "\n";
 			}
 		}
-		$content .= $this->expires . ':' . $this->user . ':' . $this->tpaId . "\n";
+		$content .= $this->expires . ':' . $this->user . ':' . $this->appId . "\n";
 		if (file_put_contents($this->tokensFile, $content) === FALSE) {
 			$this->errorpage(21);
 		}
@@ -546,9 +546,9 @@ class DirectSSOClient {
 	private function errorpage($error) {
 		if ($this->logLevel > 2) {
 			// Date format: Sat Mar 10 15:16:08 MST 2001
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " TPA_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
+			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
 		} elseif ($this->logLevel > 0) {
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " TPA_ID:" . $_GET['tpa_id'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
+			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
 		}
 		// Write to Logfile
 		if ($error != 0) {
@@ -597,7 +597,7 @@ class DirectSSOClient {
 			if ($section == 'errorcodes') {
 				if ("user_missing" == $tmp2) {
 					$this->checkifurl($tmp3, 1);
-				} elseif ("tpaid_missing" == strtolower($tmp2)) {
+				} elseif ("appid_missing" == strtolower($tmp2)) {
 					$this->checkifurl($tmp3, 2);
 				} elseif ("expires_missing" == strtolower($tmp2)) {
 					$this->checkifurl($tmp3, 3);
@@ -615,7 +615,7 @@ class DirectSSOClient {
 					$this->checkifurl($tmp3, 21);
 				} elseif ("logfile_missingfile" == strtolower($tmp2)) {
 					$this->checkifurl($tmp3, 22);
-				} elseif ("tpaid_unknown" == strtolower($tmp2)) {
+				} elseif ("appid_unknown" == strtolower($tmp2)) {
 					$this->checkifurl($tmp3, 30);
 				} elseif ("usedtokens_allreadyused" == strtolower($tmp2)) {
 					$this->checkifurl($tmp3, 31);
@@ -623,7 +623,7 @@ class DirectSSOClient {
 					$this->checkifurl($tmp3, 32);
 				} elseif ("expires_exeeded" == strtolower($tmp2)) {
 					$this->checkifurl($tmp3, 33);
-				} elseif ("tpa_error" == strtolower($tmp2)) {
+				} elseif ("app_error" == strtolower($tmp2)) {
 					$this->checkifurl($tmp3, 40);
 				}
 			}
@@ -633,9 +633,9 @@ class DirectSSOClient {
 	private function successmessage($action) {
 		if ($this->logLevel > 2) {
 			// Date format: Sat Mar 10 15:16:08 MST 2001
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " TPA_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " SUCCESS: action '" . $action . "' completed successfully\n";
+			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " SUCCESS: action '" . $action . "' completed successfully\n";
 		} elseif ($this->logLevel > 0) {
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " TPA_ID:" . $_GET['tpa_id'] . " SUCCESS: action '" . $action . "' completed successfully\n";
+			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " SUCCESS: action '" . $action . "' completed successfully\n";
 		}
 		// Write to Logfile
 		fwrite($this->logging, $this->logit);
@@ -663,5 +663,5 @@ class DirectSSOClient {
 	}
 }
 
-$configFile = "/usr/local/directsso/etc/lemken_directsso.conf";
+$configFile = "/usr/local/directsso/etc/directsso.conf";
 $client = new DirectSSOClient($configFile);
