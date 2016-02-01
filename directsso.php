@@ -147,11 +147,11 @@ class DirectSSOClient {
 		if ($this->cmd == 'cmd') {
 			// get protocol version from the adapter
 
-			$getver = preg_split(' ', $this->confline, 2);
+			$getver = explode(' ', $this->confline, 2);
 			$getver = $getver[0] . ' --get_version' . PHP_EOL;
 			$tempver = '';
 			exec($getver, $tempver);
-			$tempver = preg_split("\ |\t", $tempver[0]);
+			$tempver = preg_split("/[\s,]+/", $tempver[0]);
 			if ($tempver[0] && $tempver[0] != "Error") {
 				$adapter_version = $tempver[1];
 			} else {
@@ -177,7 +177,7 @@ class DirectSSOClient {
 					print('<br>Return values: ');
 					print_r($return);
 				}
-			} elseif (preg_match("^2.", $adapter_version)) {
+			} elseif (preg_match("/^2./", $adapter_version)) {
 				switch ($this->action) {
 					case 'logon':
 						if ($this->flags["create_modify"] == "1") {
@@ -221,7 +221,7 @@ class DirectSSOClient {
 				$return = array();
 			}
 			foreach ((array)$return as $i) {
-				$pieces = preg_split("\ |\t", $i, 2);  // split char whitespace
+				$pieces = explode(' ', $i, 2);  // split char whitespace
 
 				if ($pieces[0] == "Error") {
 					$$this->errorText = $pieces[1];
