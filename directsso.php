@@ -169,15 +169,7 @@ class DirectSSOClient {
 				printf('<br>Adapter protocol version: ' . $adapter_version);
 			}
 
-			if ($adapter_version == "1.0") {
-				$return = '';
-				exec($this->confline, $return);
-				if ($this->debugflag) {
-					print('<br>Command executed: ' . $this->confline);
-					print('<br>Return values: ');
-					print_r($return);
-				}
-			} elseif (preg_match("/^2./", $adapter_version)) {
+			if (preg_match("/^2./", $adapter_version)) {
 				switch ($this->action) {
 					case 'logon':
 						if ($this->flags["create_modify"] == "1") {
@@ -214,7 +206,16 @@ class DirectSSOClient {
 						// still needs to be done
 						break;
 				}
+			} else {
+				$return = '';
+				exec($this->confline, $return);
+				if ($this->debugflag) {
+					print('<br>Command executed: ' . $this->confline);
+					print('<br>Return values: ');
+					print_r($return);
+				}
 			}
+
 			$sso_values = array();
 			$j = -1;
 			if (!isset($return) || !is_array($return)) {
