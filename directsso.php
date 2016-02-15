@@ -104,9 +104,16 @@ class DirectSSOClient {
 			$this->data = 'user=' . $this->user . '&tpa_id=' . $this->appId . '&expires=' . $this->expires;
 		} else {
 			if (version_compare("2.1", $this->version, '>=')) {
-				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&app_id=' . $this->appId . '&expires=' . $this->expires . '&action=' . $this->action . '&flags=' . $this->flags . '&userdata=' . $this->userData;
+				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&app_id=' . $this->appId . '&expires=' . $this->expires . '&action=' . $this->action;
 			} else {
-				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&tpa_id=' . $this->appId . '&expires=' . $this->expires . '&action=' . $this->action . '&flags=' . $this->flags . '&userdata=' . $this->userData;
+				$this->data = 'version=' . $this->version . '&user=' . $this->user . '&tpa_id=' . $this->appId . '&expires=' . $this->expires . '&action=' . $this->action;
+			}
+
+			if (!empty($this->flags)) {
+				$this->data .= '&flags=' . $this->flags;
+			}
+			if (!empty($this->userData)) {
+				$this->data .= '&userdata=' . $this->userData;
 			}
 		}
 		if ($this->debugflag) {
