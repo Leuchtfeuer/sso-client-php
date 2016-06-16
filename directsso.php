@@ -1,7 +1,7 @@
 <?php
 
 // Debug switch
-// $debugflag=true;
+//$debugflag = true;
 
 # --
 #
@@ -9,7 +9,7 @@
 # Direct SSO Client (PHP)
 #
 # Version            : 0.8.0
-# Last update        : 16.09.2015
+# Last update        : 16.06.2016
 #
 # (c) Bitmotion GmbH, Hannover, Germany
 # http://www.single-signon.com
@@ -17,7 +17,7 @@
 # --
 
 #############################################################################
-# Copyright (C) 2003-2006 Dietrich Heise - net&works GmbH - <heise@naw.de>
+# Copyright (C) 2003-2016 Bitmotion GmbH - <typo3-ext@bitmotion.de>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 #############################################################################
+
+$configFile = "/usr/local/directsso/etc/directsso.conf";
 
 class DirectSSOClient {
 
@@ -54,7 +56,7 @@ class DirectSSOClient {
 	private $expires;
 	private $sign;
 	private $data;
-	private $debugflag;
+	private $debugflag = false;
 	private $action;
 	private $userData;
 	private $version;
@@ -491,6 +493,7 @@ class DirectSSOClient {
 			unlink($tmp_signature_file);
 
 			if ($this->debugflag) {
+				printf('<br>Command executed: ' . "echo -n \"" . $this->data . "\"|openssl dgst -sha1 -verify \"" . $this->publicSslKey . "\" -signature \"" . $tmp_signature_file . "\"");
 				printf('<br>Verification result string: ' . $verify);
 			}
 
@@ -671,5 +674,4 @@ class DirectSSOClient {
 	}
 }
 
-$configFile = "/usr/local/directsso/etc/directsso.conf";
 $client = new DirectSSOClient($configFile);
