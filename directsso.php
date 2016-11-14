@@ -8,8 +8,8 @@
 # Signature-Based Single Sign-On Framework
 # Direct SSO Client (PHP)
 #
-# Version            : 0.8.0
-# Last update        : 16.06.2016
+# Version            : 0.8.1
+# Last update        : 14.11.2016
 #
 # (c) Bitmotion GmbH, Hannover, Germany
 # http://www.single-signon.com
