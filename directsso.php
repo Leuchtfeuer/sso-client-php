@@ -556,8 +556,12 @@ class DirectSSOClient {
 
 	private function errorpage($error) {
 		if ($this->logLevel > 2) {
-			// Date format: Sat Mar 10 15:16:08 MST 2001
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
+            // Date format: Sat Mar 10 15:16:08 MST 2001
+            if (version_compare("2.1", $this->version, '>=')) {
+                $this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['app_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
+            } else {
+                $this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
+            }
 		} elseif ($this->logLevel > 0) {
 			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " ERROR " . $error . ":" . $this->errorCodes[$error] . "\n";
 		}
@@ -644,7 +648,11 @@ class DirectSSOClient {
 	private function successmessage($action) {
 		if ($this->logLevel > 2) {
 			// Date format: Sat Mar 10 15:16:08 MST 2001
-			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " SUCCESS: action '" . $action . "' completed successfully\n";
+            if (version_compare("2.1", $this->version, '>=')) {
+                $this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['app_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " SUCCESS: action '" . $action . "' completed successfully\n";
+            } else {
+                $this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " TIMESTAMP:" . $_GET['expires'] . " SIGNATURE:" . $_GET['signature'] . " SUCCESS: action '" . $action . "' completed successfully\n";
+            }
 		} elseif ($this->logLevel > 0) {
 			$this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " SUCCESS: action '" . $action . "' completed successfully\n";
 		}
