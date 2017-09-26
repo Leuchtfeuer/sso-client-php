@@ -93,8 +93,14 @@ class DirectSSOClient
 
         $this->logging = touch($this->logFile);
         $this->logging = @fopen($this->logFile, 'a');
-        if (!$this->logging) {            // can't open config
-            $this->errorpage(22);
+
+        // can not open config
+        if (!$this->logging) {
+            // log error
+            error_log($this->errorCodes[22]);
+
+            // set logfile to false
+            $this->logFile = false;
         }
 
         // get variables
@@ -331,17 +337,13 @@ class DirectSSOClient
             $this->errorpage($sso_values['Error']);
         }
 
-#print_r("<pre>");
-#print_r($sso_values);
-#print_r("</pre>");
-
         if ($this->logLevel > 3) {
             $this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $this->user . " APP_ID:" . $this->appId . " TIMESTAMP:" . $this->expires . " SIGNATURE:" . $_GET['signature'] . "\n";
         } elseif ($this->logLevel > 1) {
             $this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $this->user . " APP_ID:" . $this->appId . "\n";
         }
-        fwrite($this->logging, $this->logit);
-        fclose($this->logging);
+        $this->writeToLog($this->logit);
+
 
 // begin hoven changes
         $j = (count($sso_values) - 2);
@@ -356,6 +358,20 @@ class DirectSSOClient
         }
         header("Location: " . $sso_values["redirecturl"]);
     }
+
+    /**
+     * Writes in logfile if exists
+     *
+     * @param string $message
+     */
+    private function writeToLog($message)
+    {
+        if ($this->logFile !== false && $this->logging !== false) {
+            fwrite($this->logging, $message);
+            fclose($this->logging);
+        }
+    }
+
 
     private function readConfig()
     {
@@ -576,8 +592,7 @@ class DirectSSOClient
         }
         // Write to Logfile
         if ($error != 0) {
-            fwrite($this->logging, $this->logit);
-            fclose($this->logging);
+            $this->writeToLog($this->logit);
         }
 
         if (isset($this->errorCodes[$error + 200])) {
@@ -668,8 +683,7 @@ class DirectSSOClient
             $this->logit = date("D M j G:i:s T Y") . " IP:" . $_SERVER["REMOTE_ADDR"] . " USER:" . $_GET['user'] . " APP_ID:" . $_GET['tpa_id'] . " SUCCESS: action '" . $action . "' completed successfully\n";
         }
         // Write to Logfile
-        fwrite($this->logging, $this->logit);
-        fclose($this->logging);
+        $this->writeToLog($this->logit);
 
         echo "<html>\n<head>\n<title>action '" . $action . "' completed successfully</title>\n</head>\n";
         echo "<body onLoad=\"setTimeout('window.close()',5000)\">\n<h1>Server Notice</h1>\n<p>";;
