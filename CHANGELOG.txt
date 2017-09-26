@@ -1,4 +1,7 @@
 Changelog
+0.8.2
+  do not break if logfile is not writable
+  add comments and .gitignore file
 0.7.3
   changed $HTTP_SERVER_VARS to $_SERVER to provide PHP5 compatibility
   changed $HTTP_GET_VARS to $_GET to provide PHP5 compatibility

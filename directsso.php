@@ -8,8 +8,8 @@
 # Signature-Based Single Sign-On Framework
 # Direct SSO Client (PHP)
 #
-# Version            : 0.8.1
-# Last update        : 14.11.2016
+# Version            : 0.8.2
+# Last update        : 26.09.2017
 #
 # (c) Bitmotion GmbH, Hannover, Germany
 # http://www.single-signon.com
@@ -17,7 +17,7 @@
 # --
 
 #############################################################################
-# Copyright (C) 2003-2016 Bitmotion GmbH - <typo3-ext@bitmotion.de>
+# Copyright (C) 2003-2017 Bitmotion GmbH - <typo3-ext@bitmotion.de>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,6 +37,9 @@
 
 $configFile = "/usr/local/directsso/etc/directsso.conf";
 
+/**
+ * Class DirectSSOClient
+ */
 class DirectSSOClient
 {
 
